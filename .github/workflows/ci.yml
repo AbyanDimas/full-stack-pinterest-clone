@@ -28,8 +28,8 @@ jobs:
     - name: Install dependencies
       run: npm ci || npm install
       
-    - name: Run Backend Tests
-      run: npm run test
+    - name: Run Backend Tests with Coverage
+      run: npx vitest run --coverage
 
   test-frontend:
     name: Frontend Tests & Build
@@ -52,8 +52,8 @@ jobs:
     - name: Install dependencies
       run: npm ci || npm install
       
-    - name: Run Frontend Tests
-      run: npm run test
+    - name: Run Frontend Tests with Coverage
+      run: npx vitest run --coverage
 
     - name: Check Build
       run: npm run build

@@ -1,0 +1,32 @@
+name: Lighthouse CI Performance Check
+
+on:
+  push:
+    branches: [ "main", "master" ]
+  pull_request:
+    branches: [ "main", "master" ]
+
+jobs:
+  lighthouse-check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.x'
+
+      - name: Install and Build Frontend
+        working-directory: ./client
+        run: |
+          npm ci || npm install
+          npm run build
+
+      - name: Run Lighthouse CI
+        uses: treosh/lighthouse-ci-action@v12
+        with:
+          # Lighthouse configuration to test the built folder
+          configPath: './client/lighthouserc.json'
+          uploadArtifacts: true
+          temporaryPublicStorage: true
