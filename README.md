@@ -3,6 +3,9 @@
 This is a full-stack Pinterest clone project. 
 
 > **Note**: This project was originally cloned from another open-source repository. However, significant modifications and improvements have been made to the original codebase.
+> 
+> **🙏 Special Thanks & Credits:** 
+> Huge shoutout to the original developer [safak](https://github.com/safak) for the incredible foundation. You can find the original repository here: [safak/full-stack-pinterest](https://github.com/safak/full-stack-pinterest).
 
 ## Modifications & Features
 - **Self-Hosted Image Kit**: Replaced the original third-party image service with a fully self-hosted solution using **MinIO** for S3-compatible object storage.
