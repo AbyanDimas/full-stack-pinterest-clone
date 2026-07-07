@@ -27,7 +27,7 @@ jobs:
 
       - name: Merge PR Automatically
         # Only auto-merge patch and minor updates to be safe, or just merge everything if you want
-        run: gh pr merge --merge "$PR_URL"
+        run: gh pr merge --merge --delete-branch "$PR_URL"
         env:
           PR_URL: ${{github.event.pull_request.html_url}}
           GH_TOKEN: ${{secrets.GITHUB_TOKEN}}
