@@ -6,15 +6,44 @@ on:
   pull_request:
     branches: [ "main", "master", "completed" ]
   schedule:
-    # Run a security scan every night at midnight UTC
     - cron: '0 0 * * *'
 
 jobs:
+  # ==========================================
+  # 0. AUTO FORMATTER (PRETTIER)
+  # ==========================================
+  format-code:
+    name: Run Prettier Auto-Formatter
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Format Frontend Code
+        working-directory: ./client
+        run: npx prettier --write "src/**/*.{js,jsx,css}"
+      - name: Format Backend Code
+        working-directory: ./backend
+        run: npx prettier --write "**/*.{js,json}" "!node_modules/**"
+      - name: Commit Formatted Changes
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "style: auto format code with prettier"
+          branch: ${{ github.head_ref }}
+
   # ==========================================
   # 1. NPM AUDIT (SECURITY)
   # ==========================================
   npm-audit-backend:
     name: Backend Security Audit
+    needs: format-code
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -31,6 +60,7 @@ jobs:
 
   npm-audit-frontend:
     name: Frontend Security Audit
+    needs: format-code
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -91,11 +121,31 @@ jobs:
       run: npm run build
 
   # ==========================================
-  # 3. LIGHTHOUSE PERFORMANCE
+  # 3. CODEQL (DEEP SECURITY SCAN)
+  # ==========================================
+  analyze-codeql:
+    name: CodeQL Security Analysis
+    needs: [test-backend, test-frontend]
+    runs-on: ubuntu-latest
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
+    steps:
+      - uses: actions/checkout@v4
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v3
+        with:
+          languages: javascript
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v3
+
+  # ==========================================
+  # 4. LIGHTHOUSE PERFORMANCE
   # ==========================================
   lighthouse-check:
     name: Lighthouse Performance Check
-    needs: build-frontend-docker
+    needs: test-frontend
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -116,7 +166,7 @@ jobs:
           temporaryPublicStorage: true
 
   # ==========================================
-  # 4. DOCKER BUILD CHECK
+  # 5. DOCKER BUILD CHECK
   # ==========================================
   build-backend-docker:
     name: Build Backend Docker Image
@@ -153,3 +203,29 @@ jobs:
         tags: full-stack-pinterest-frontend:latest
         cache-from: type=gha
         cache-to: type=gha,mode=max
+
+  # ==========================================
+  # 6. SEMANTIC RELEASE
+  # ==========================================
+  release:
+    name: Generate Automatic Release
+    # Release only happens if EVERYTHING else passes successfully!
+    needs: [analyze-codeql, lighthouse-check, build-backend-docker, build-frontend-docker]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      issues: write
+      pull-requests: write
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.x'
+      - name: Run Semantic Release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: npx semantic-release
