@@ -1,7 +1,6 @@
 import Comment from "../models/comment.model.js";
 import User from "../models/user.model.js";
 
-
 export const getPostComments = async (req, res) => {
   const { postId } = req.params;
 
@@ -18,7 +17,7 @@ import Notification from "../models/notification.model.js";
 export const addComment = async (req, res) => {
   const { description, pin } = req.body;
   const userId = req.userId;
-  
+
   const comment = await Comment.create({ description, pin, user: userId });
 
   // Create notification for post owner
@@ -29,7 +28,7 @@ export const addComment = async (req, res) => {
       sender: userId,
       type: "comment",
       pinId: pin,
-      text: description
+      text: description,
     });
   }
 

@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeAll, afterAll, beforeEach } from 'vitest';
+import { describe, it, expect, beforeAll, afterAll, beforeEach } from "vitest";
 import request from "supertest";
 import app from "../index.js";
 import mongoose from "mongoose";
@@ -35,7 +35,7 @@ describe("Pin Interaction Tests", () => {
       password: "password123",
       displayName: "Pinner",
     });
-    
+
     const loginRes = await request(app).post("/users/auth/login").send({
       email: "pinner@test.com",
       password: "password123",
@@ -73,14 +73,13 @@ describe("Pin Interaction Tests", () => {
     const checkRes = await request(app)
       .get(`/pins/interaction-check/${pinId}`)
       .set("Cookie", `token=${token}`);
-      
+
     expect(checkRes.statusCode).toBe(200);
     expect(checkRes.body.isLiked).toBe(true);
     expect(checkRes.body.isSaved).toBe(true);
     expect(checkRes.body.likeCount).toBe(1);
 
-    const savedRes = await request(app)
-      .get(`/pins/saved/${userId}`);
+    const savedRes = await request(app).get(`/pins/saved/${userId}`);
     expect(savedRes.statusCode).toBe(200);
     expect(savedRes.body.pins.length).toBe(1);
     expect(savedRes.body.pins[0]._id).toBe(pinId);

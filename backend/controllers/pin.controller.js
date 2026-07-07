@@ -34,10 +34,10 @@ export const getPins = async (req, res) => {
           ],
         }
       : userId
-      ? { user: userId }
-      : boardId
-      ? { board: boardId }
-      : {}
+        ? { user: userId }
+        : boardId
+          ? { board: boardId }
+          : {},
   )
     .limit(LIMIT)
     .skip(pageNumber * LIMIT);
@@ -55,7 +55,7 @@ export const getPin = async (req, res) => {
   const { id } = req.params;
   const pin = await Pin.findById(id).populate(
     "user",
-    "username img displayName"
+    "username img displayName",
   );
 
   console.log(pin);
@@ -74,10 +74,12 @@ export const getSavedPins = async (req, res) => {
       .limit(LIMIT)
       .sort({ createdAt: -1 });
 
-    const pins = saves.map((save) => save.pin).filter(pin => pin != null);
+    const pins = saves.map((save) => save.pin).filter((pin) => pin != null);
     const hasNextPage = saves.length === LIMIT;
 
-    res.status(200).json({ pins, nextCursor: hasNextPage ? pageNumber + 1 : null });
+    res
+      .status(200)
+      .json({ pins, nextCursor: hasNextPage ? pageNumber + 1 : null });
   } catch (err) {
     res.status(500).json({ message: "Failed to fetch saved pins." });
   }
@@ -129,7 +131,7 @@ export const createPin = async (req, res) => {
 
   const textLeftPosition = Math.round((parsedTextOptions.left * width) / 375);
   const textTopPosition = Math.round(
-    (parsedTextOptions.top * height) / parsedCanvasOptions.height
+    (parsedTextOptions.top * height) / parsedCanvasOptions.height,
   );
 
   let croppingStrategy = "";
@@ -147,7 +149,7 @@ export const createPin = async (req, res) => {
     }
   }
 
-  const fileName = Date.now() + "-" + media.name.replace(/\s+/g, '-');
+  const fileName = Date.now() + "-" + media.name.replace(/\s+/g, "-");
 
   const resizeOptions = {
     width: width,
@@ -167,7 +169,7 @@ export const createPin = async (req, res) => {
     const fontSize = Math.round(parsedTextOptions.fontSize * 2.1);
     const svgText = `
       <svg width="${width}" height="${height}">
-        <text x="${textLeftPosition}" y="${textTopPosition + fontSize}" font-size="${fontSize}" font-family="Arial, sans-serif" fill="${parsedTextOptions.color || '#000'}">${parsedTextOptions.text}</text>
+        <text x="${textLeftPosition}" y="${textTopPosition + fontSize}" font-size="${fontSize}" font-family="Arial, sans-serif" fill="${parsedTextOptions.color || "#000"}">${parsedTextOptions.text}</text>
       </svg>
     `;
     sharpInstance.composite([{ input: Buffer.from(svgText), top: 0, left: 0 }]);
@@ -176,7 +178,7 @@ export const createPin = async (req, res) => {
   try {
     // Process image to buffer
     const processedBuffer = await sharpInstance.toBuffer();
-    
+
     // Upload to MinIO
     const bucketName = process.env.MINIO_BUCKET_NAME || "pinterest";
     await s3.send(
@@ -185,7 +187,7 @@ export const createPin = async (req, res) => {
         Key: fileName,
         Body: processedBuffer,
         ContentType: media.mimetype || "image/jpeg",
-      })
+      }),
     );
 
     let newBoardId;
@@ -209,7 +211,7 @@ export const createPin = async (req, res) => {
       width: width,
       height: height,
     });
-    
+
     return res.status(201).json(newPin);
   } catch (err) {
     console.log(err);

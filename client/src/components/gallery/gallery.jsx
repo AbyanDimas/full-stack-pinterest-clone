@@ -171,20 +171,34 @@ import Skeleton from "../skeleton/skeleton";
 //   },
 // ];
 
-const fetchPins = async ({ pageParam, search, userId, boardId, savedUserId }) => {
+const fetchPins = async ({
+  pageParam,
+  search,
+  userId,
+  boardId,
+  savedUserId,
+}) => {
   if (savedUserId) {
-    const res = await axios.get(`${import.meta.env.VITE_API_ENDPOINT}/pins/saved/${savedUserId}?cursor=${pageParam}`);
+    const res = await axios.get(
+      `${import.meta.env.VITE_API_ENDPOINT}/pins/saved/${savedUserId}?cursor=${pageParam}`,
+    );
     return res.data;
   }
   const res = await axios.get(
     `${import.meta.env.VITE_API_ENDPOINT}/pins?cursor=${pageParam}&search=${
       search || ""
-    }&userId=${userId || ""}&boardId=${boardId || ""}`
+    }&userId=${userId || ""}&boardId=${boardId || ""}`,
   );
   return res.data;
 };
 
-const Gallery = ({ search, userId, boardId, savedUserId, layoutMode = 'default' }) => {
+const Gallery = ({
+  search,
+  userId,
+  boardId,
+  savedUserId,
+  layoutMode = "default",
+}) => {
   const { data, fetchNextPage, hasNextPage, status } = useInfiniteQuery({
     // queryKey: ["pins"],
     // FIXED QUERY KEY
@@ -197,7 +211,7 @@ const Gallery = ({ search, userId, boardId, savedUserId, layoutMode = 'default' 
 
   // FIXED: ADD SKELETON LOADING
   // if (status === "pending") return "Loading...";
-  if (status === "pending") return <Skeleton/>;
+  if (status === "pending") return <Skeleton />;
   if (status === "error") return "Something went wrong...";
 
   const allPins = data?.pages.flatMap((page) => page.pins) || [];

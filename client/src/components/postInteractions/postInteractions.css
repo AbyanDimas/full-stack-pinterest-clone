@@ -11,7 +11,8 @@
   font-weight: 500;
 }
 
-.interactionIcons img, .interactionIcons svg{
+.interactionIcons img,
+.interactionIcons svg {
   cursor: pointer;
 }
 

@@ -4,7 +4,7 @@ import {
   registerUser,
   loginUser,
   logoutUser,
-  followUser
+  followUser,
 } from "../controllers/user.controller.js";
 import { verifyToken } from "../middlewares/verifyToken.js";
 

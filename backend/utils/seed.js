@@ -40,7 +40,7 @@ const seedDB = async () => {
   const pins = [];
   for (const user of users) {
     const userBoards = boards.filter(
-      (board) => board.user.toString() === user._id.toString()
+      (board) => board.user.toString() === user._id.toString(),
     );
     for (let i = 1; i <= 10; i++) {
       const mediaSize = Math.random() < 0.5 ? "800/1200" : "800/600";

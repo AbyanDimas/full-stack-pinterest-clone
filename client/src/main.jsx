@@ -15,14 +15,20 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 const Homepage = React.lazy(() => import("./routes/homepage/homepage"));
 const CreatePage = React.lazy(() => import("./routes/createPage/createPage"));
 const PostPage = React.lazy(() => import("./routes/postPage/postPage"));
-const ProfilePage = React.lazy(() =>
-  import("./routes/profilePage/profilePage")
+const ProfilePage = React.lazy(
+  () => import("./routes/profilePage/profilePage"),
 );
 const SearchPage = React.lazy(() => import("./routes/searchPage/searchPage"));
 const AuthPage = React.lazy(() => import("./routes/authPage/authPage"));
-const MessagesPage = React.lazy(() => import("./routes/messagesPage/messagesPage"));
-const NotificationsPage = React.lazy(() => import("./routes/notificationsPage/notificationsPage"));
-const SettingsPage = React.lazy(() => import("./routes/settingsPage/settingsPage"));
+const MessagesPage = React.lazy(
+  () => import("./routes/messagesPage/messagesPage"),
+);
+const NotificationsPage = React.lazy(
+  () => import("./routes/notificationsPage/notificationsPage"),
+);
+const SettingsPage = React.lazy(
+  () => import("./routes/settingsPage/settingsPage"),
+);
 const SavedPage = React.lazy(() => import("./routes/savedPage/savedPage"));
 
 const queryClient = new QueryClient();
@@ -47,5 +53,5 @@ createRoot(document.getElementById("root")).render(
         </Routes>
       </BrowserRouter>
     </QueryClientProvider>
-  </StrictMode>
+  </StrictMode>,
 );

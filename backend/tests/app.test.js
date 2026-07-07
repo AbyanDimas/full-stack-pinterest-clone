@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeAll, afterAll, beforeEach } from 'vitest';
+import { describe, it, expect, beforeAll, afterAll, beforeEach } from "vitest";
 import request from "supertest";
 import app from "../index.js";
 import mongoose from "mongoose";
@@ -39,7 +39,7 @@ describe("Pinterest API Complex Tests", () => {
       password: "password123",
       displayName: "Test User",
     });
-    
+
     expect(userRes.statusCode).toBe(201);
 
     // 2. Login the user
@@ -47,7 +47,7 @@ describe("Pinterest API Complex Tests", () => {
       email: "test@test.com",
       password: "password123",
     });
-    
+
     expect(loginRes.statusCode).toBe(200);
     const token = loginRes.headers["set-cookie"][0].split(";")[0].split("=")[1];
 

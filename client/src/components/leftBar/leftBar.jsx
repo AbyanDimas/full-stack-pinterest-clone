@@ -1,5 +1,5 @@
 import Image from "../image/image";
-import {Link} from "react-router";
+import { Link } from "react-router";
 import "./leftBar.css";
 
 const LeftBar = () => {
@@ -7,7 +7,7 @@ const LeftBar = () => {
     <div className="leftBar">
       <div className="menuIcons">
         <Link to="/" className="menuIcon">
-          <Image path="/general/logo.png" alt="" className="logo"/>
+          <Image path="/general/logo.png" alt="" className="logo" />
         </Link>
         <Link to="/" className="menuIcon">
           <Image path="/general/home.svg" alt="" />
@@ -16,7 +16,15 @@ const LeftBar = () => {
           <Image path="/general/create.svg" alt="" />
         </Link>
         <Link to="/saved" className="menuIcon" title="Saved Pins">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="black" strokeWidth="2" style={{ cursor: "pointer" }}>
+          <svg
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="black"
+            strokeWidth="2"
+            style={{ cursor: "pointer" }}
+          >
             <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path>
           </svg>
         </Link>

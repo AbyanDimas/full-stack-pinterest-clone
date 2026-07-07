@@ -52,7 +52,6 @@ const CreatePage = () => {
     }
   }, [file]);
 
-
   // FIXED: CHANGE DIRECT REQUEST TO MUTATION
   const mutation = useMutation({
     mutationFn: addPost,
@@ -87,7 +86,6 @@ const CreatePage = () => {
       mutation.mutate(formData);
     }
   };
-
 
   // FIXED: FETCH EXISTING BOARDS
   const { data, isPending, error } = useQuery({

@@ -25,8 +25,8 @@ const PostPage = () => {
 
   return (
     <div className="postPage">
-      <div 
-        onClick={() => navigate(-1)} 
+      <div
+        onClick={() => navigate(-1)}
         style={{ cursor: "pointer", display: "flex", marginTop: "16px" }}
         title="Go Back"
       >
@@ -37,7 +37,7 @@ const PostPage = () => {
       <div className={`postContainer ${isExpanded ? "expanded" : ""}`}>
         <div className="postImg" style={{ position: "relative" }}>
           <Image path={data.media} alt="" w={isExpanded ? undefined : 736} />
-          <button 
+          <button
             onClick={() => setIsExpanded(!isExpanded)}
             style={{
               position: "absolute",
@@ -53,29 +53,47 @@ const PostPage = () => {
               display: "flex",
               alignItems: "center",
               gap: "8px",
-              boxShadow: "0 4px 12px rgba(0,0,0,0.1)"
+              boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
             }}
           >
             {isExpanded ? (
               <>
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M8 3v3a2 2 0 0 1-2 2H3m18 0h-3a2 2 0 0 1-2-2V3m0 18v-3a2 2 0 0 1 2-2h3M3 16h3a2 2 0 0 1 2 2v3"/></svg>
+                <svg
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                >
+                  <path d="M8 3v3a2 2 0 0 1-2 2H3m18 0h-3a2 2 0 0 1-2-2V3m0 18v-3a2 2 0 0 1 2-2h3M3 16h3a2 2 0 0 1 2 2v3" />
+                </svg>
                 Minimize
               </>
             ) : (
               <>
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg>
+                <svg
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                >
+                  <path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7" />
+                </svg>
                 Expand
               </>
             )}
           </button>
         </div>
         <div className="postDetails">
-          <PostInteractions postId={id}/>
+          <PostInteractions postId={id} />
           <Link to={`/${data.user.username}`} className="postUser">
             <Image path={data.user.img || "/general/noAvatar.png"} />
             <span>{data.user.displayName}</span>
           </Link>
-          <Comments id={data._id}/>
+          <Comments id={data._id} />
         </div>
       </div>
     </div>

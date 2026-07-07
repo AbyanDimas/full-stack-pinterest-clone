@@ -5,7 +5,7 @@ const saveSchema = new Schema(
   {
     pin: {
       type: Schema.Types.ObjectId,
-      ref:"Pin",
+      ref: "Pin",
       required: true,
     },
     user: {
@@ -14,7 +14,7 @@ const saveSchema = new Schema(
       required: true,
     },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 export default mongoose.model("Save", saveSchema);

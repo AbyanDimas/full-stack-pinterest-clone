@@ -22,7 +22,7 @@ const AuthPage = () => {
     try {
       const res = await apiRequest.post(
         `/users/auth/${isRegister ? "register" : "login"}`,
-        data
+        data,
       );
 
       setCurrentUser(res.data);

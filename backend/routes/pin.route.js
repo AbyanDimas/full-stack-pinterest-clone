@@ -16,6 +16,6 @@ router.get("/saved/:userId", getSavedPins);
 router.get("/:id", getPin);
 router.post("/", verifyToken, createPin);
 router.get("/interaction-check/:id", interactionCheck);
-router.post("/interact/:id",verifyToken, interact);
+router.post("/interact/:id", verifyToken, interact);
 
 export default router;

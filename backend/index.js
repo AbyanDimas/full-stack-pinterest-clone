@@ -50,7 +50,7 @@ app.use((error, req, res, next) => {
   });
 });
 
-if (process.env.NODE_ENV !== 'test') {
+if (process.env.NODE_ENV !== "test") {
   app.listen(3000, () => {
     connectDB();
     console.log("Server is running on port 3000!");

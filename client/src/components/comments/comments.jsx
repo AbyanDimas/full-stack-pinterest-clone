@@ -5,7 +5,6 @@ import Comment from "./comment";
 import CommentForm from "./commentForm";
 
 const Comments = ({ id }) => {
-
   const { isPending, error, data } = useQuery({
     queryKey: ["comments", id],
     queryFn: () => apiRequest.get(`/comments/${id}`).then((res) => res.data),
@@ -20,13 +19,15 @@ const Comments = ({ id }) => {
   return (
     <div className="comments">
       <div className="commentList">
-        <span className="commentCount">{data.length === 0 ? "No comments" : data.length + " Comments"}</span>
+        <span className="commentCount">
+          {data.length === 0 ? "No comments" : data.length + " Comments"}
+        </span>
         {/* COMMENT */}
         {data.map((comment) => (
           <Comment key={comment._id} comment={comment} />
         ))}
       </div>
-      <CommentForm id={id}/>
+      <CommentForm id={id} />
     </div>
   );
 };

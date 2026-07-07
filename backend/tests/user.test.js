@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeAll, afterAll, beforeEach } from 'vitest';
+import { describe, it, expect, beforeAll, afterAll, beforeEach } from "vitest";
 import request from "supertest";
 import app from "../index.js";
 import mongoose from "mongoose";
@@ -61,7 +61,7 @@ describe("User & Follow System Tests", () => {
     const betaProfile = await request(app)
       .get(`/users/beta`)
       .set("Cookie", `token=${token}`);
-    
+
     expect(betaProfile.statusCode).toBe(200);
     expect(betaProfile.body.followerCount).toBe(1);
     expect(betaProfile.body.isFollowing).toBe(true); // Alpha is following Beta

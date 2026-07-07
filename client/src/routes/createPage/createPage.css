@@ -70,12 +70,12 @@
   position: relative;
 }
 
-.preview img{
+.preview img {
   border-radius: 32px;
   width: 100%;
 }
 
-.editIcon{
+.editIcon {
   position: absolute;
   top: 16px;
   right: 16px;

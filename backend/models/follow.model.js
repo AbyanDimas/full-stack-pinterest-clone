@@ -5,7 +5,7 @@ const followSchema = new Schema(
   {
     follower: {
       type: Schema.Types.ObjectId,
-      ref:"User",
+      ref: "User",
       required: true,
     },
     following: {
@@ -14,7 +14,7 @@ const followSchema = new Schema(
       required: true,
     },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 export default mongoose.model("Follow", followSchema);

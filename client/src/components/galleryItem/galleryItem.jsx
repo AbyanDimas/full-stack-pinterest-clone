@@ -20,14 +20,15 @@ const GalleryItem = ({ item }) => {
   };
 
   const saveMutation = useMutation({
-    mutationFn: () => apiRequest.post(`/pins/interact/${item._id}`, { type: "save" }),
+    mutationFn: () =>
+      apiRequest.post(`/pins/interact/${item._id}`, { type: "save" }),
     onSuccess: () => {
       showToast("Pin saved successfully!");
       queryClient.invalidateQueries({ queryKey: ["pins"] });
     },
     onError: () => {
       showToast("Please login to save pins!");
-    }
+    },
   });
 
   const handleShare = () => {
@@ -37,7 +38,9 @@ const GalleryItem = ({ item }) => {
 
   const handleDownload = async () => {
     try {
-      const response = await fetch(`${import.meta.env.VITE_IMGPROXY_URL}/rs:fill:0:0:0/g:sm/plain/s3://pinterest/${item.media}`);
+      const response = await fetch(
+        `${import.meta.env.VITE_IMGPROXY_URL}/rs:fill:0:0:0/g:sm/plain/s3://pinterest/${item.media}`,
+      );
       const blob = await response.blob();
       const url = window.URL.createObjectURL(blob);
       const link = document.createElement("a");
@@ -57,30 +60,58 @@ const GalleryItem = ({ item }) => {
 
   return (
     <div className="galleryItem">
-      <Image path={item.media} alt="" w={372} h={optimizedHeight}/>
+      <Image path={item.media} alt="" w={372} h={optimizedHeight} />
       <Link to={`/pin/${item._id}`} className="overlay" />
-      <button className="saveButton" onClick={(e) => { e.stopPropagation(); saveMutation.mutate(); }}>Save</button>
-      
-      {toastMessage && (
-        <div className="customToast">
-          {toastMessage}
-        </div>
-      )}
+      <button
+        className="saveButton"
+        onClick={(e) => {
+          e.stopPropagation();
+          saveMutation.mutate();
+        }}
+      >
+        Save
+      </button>
+
+      {toastMessage && <div className="customToast">{toastMessage}</div>}
 
       {showMoreMenu && (
         <div className="moreMenuDropdown">
-          <button onClick={() => { handleShare(); setShowMoreMenu(false); }}>Copy Link</button>
+          <button
+            onClick={() => {
+              handleShare();
+              setShowMoreMenu(false);
+            }}
+          >
+            Copy Link
+          </button>
           <button onClick={handleDownload}>Download Image</button>
-          <button onClick={() => window.open(`/pin/${item._id}`, '_blank')}>Open in New Tab</button>
-          <button onClick={() => setIsHidden(true)} style={{ color: "#e60023" }}>Hide Pin</button>
+          <button onClick={() => window.open(`/pin/${item._id}`, "_blank")}>
+            Open in New Tab
+          </button>
+          <button
+            onClick={() => setIsHidden(true)}
+            style={{ color: "#e60023" }}
+          >
+            Hide Pin
+          </button>
         </div>
       )}
 
       <div className="overlayIcons">
-        <button onClick={(e) => { e.stopPropagation(); handleShare(); }}>
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            handleShare();
+          }}
+        >
           <Image path="/general/share.svg" alt="" />
         </button>
-        <button onClick={(e) => { e.stopPropagation(); setShowMoreMenu(!showMoreMenu); }}>
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            setShowMoreMenu(!showMoreMenu);
+          }}
+        >
           <Image path="/general/more.svg" alt="" />
         </button>
       </div>

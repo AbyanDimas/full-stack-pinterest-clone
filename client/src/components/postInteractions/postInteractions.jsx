@@ -34,7 +34,7 @@ const PostInteractions = ({ postId }) => {
     },
     onError: () => {
       showToast("Action failed. Please log in.");
-    }
+    },
   });
 
   const { isPending, error, data } = useQuery({
@@ -57,9 +57,11 @@ const PostInteractions = ({ postId }) => {
     // We can fetch it from the query cache.
     const pinData = queryClient.getQueryData(["pin", postId]);
     if (!pinData) return;
-    
+
     try {
-      const response = await fetch(`${import.meta.env.VITE_IMGPROXY_URL}/rs:fill:0:0:0/g:sm/plain/s3://pinterest/${pinData.media}`);
+      const response = await fetch(
+        `${import.meta.env.VITE_IMGPROXY_URL}/rs:fill:0:0:0/g:sm/plain/s3://pinterest/${pinData.media}`,
+      );
       const blob = await response.blob();
       const url = window.URL.createObjectURL(blob);
       const link = document.createElement("a");
@@ -88,42 +90,109 @@ const PostInteractions = ({ postId }) => {
   return (
     <div className="postInteractions" style={{ position: "relative" }}>
       {toastMessage && (
-        <div style={{
-          position: "fixed",
-          bottom: "40px",
-          left: "50%",
-          transform: "translateX(-50%)",
-          backgroundColor: "rgba(0, 0, 0, 0.8)",
-          color: "white",
-          padding: "12px 24px",
-          borderRadius: "24px",
-          fontWeight: "500",
-          fontSize: "14px",
-          zIndex: 1000,
-          pointerEvents: "none"
-        }}>
+        <div
+          style={{
+            position: "fixed",
+            bottom: "40px",
+            left: "50%",
+            transform: "translateX(-50%)",
+            backgroundColor: "rgba(0, 0, 0, 0.8)",
+            color: "white",
+            padding: "12px 24px",
+            borderRadius: "24px",
+            fontWeight: "500",
+            fontSize: "14px",
+            zIndex: 1000,
+            pointerEvents: "none",
+          }}
+        >
           {toastMessage}
         </div>
       )}
-      
+
       {showMoreMenu && (
-        <div style={{
-          position: "absolute",
-          top: "40px",
-          left: "0",
-          backgroundColor: "white",
-          borderRadius: "16px",
-          boxShadow: "0 4px 12px rgba(0,0,0,0.15)",
-          display: "flex",
-          flexDirection: "column",
-          overflow: "hidden",
-          zIndex: 100,
-          minWidth: "150px"
-        }}>
-          <button onClick={handleShare} style={{ padding: "12px 16px", border: "none", background: "none", textAlign: "left", fontSize: "14px", fontWeight: "500", cursor: "pointer", width: "100%", color: "#111" }}>Copy Link</button>
-          <button onClick={handleDownload} style={{ padding: "12px 16px", border: "none", background: "none", textAlign: "left", fontSize: "14px", fontWeight: "500", cursor: "pointer", width: "100%", color: "#111" }}>Download Image</button>
-          <button onClick={() => { window.open(`/pin/${postId}`, '_blank'); setShowMoreMenu(false); }} style={{ padding: "12px 16px", border: "none", background: "none", textAlign: "left", fontSize: "14px", fontWeight: "500", cursor: "pointer", width: "100%", color: "#111" }}>Open in New Tab</button>
-          <button onClick={handleHide} style={{ padding: "12px 16px", border: "none", background: "none", textAlign: "left", fontSize: "14px", fontWeight: "500", cursor: "pointer", color: "#e60023", width: "100%" }}>Hide Pin</button>
+        <div
+          style={{
+            position: "absolute",
+            top: "40px",
+            left: "0",
+            backgroundColor: "white",
+            borderRadius: "16px",
+            boxShadow: "0 4px 12px rgba(0,0,0,0.15)",
+            display: "flex",
+            flexDirection: "column",
+            overflow: "hidden",
+            zIndex: 100,
+            minWidth: "150px",
+          }}
+        >
+          <button
+            onClick={handleShare}
+            style={{
+              padding: "12px 16px",
+              border: "none",
+              background: "none",
+              textAlign: "left",
+              fontSize: "14px",
+              fontWeight: "500",
+              cursor: "pointer",
+              width: "100%",
+              color: "#111",
+            }}
+          >
+            Copy Link
+          </button>
+          <button
+            onClick={handleDownload}
+            style={{
+              padding: "12px 16px",
+              border: "none",
+              background: "none",
+              textAlign: "left",
+              fontSize: "14px",
+              fontWeight: "500",
+              cursor: "pointer",
+              width: "100%",
+              color: "#111",
+            }}
+          >
+            Download Image
+          </button>
+          <button
+            onClick={() => {
+              window.open(`/pin/${postId}`, "_blank");
+              setShowMoreMenu(false);
+            }}
+            style={{
+              padding: "12px 16px",
+              border: "none",
+              background: "none",
+              textAlign: "left",
+              fontSize: "14px",
+              fontWeight: "500",
+              cursor: "pointer",
+              width: "100%",
+              color: "#111",
+            }}
+          >
+            Open in New Tab
+          </button>
+          <button
+            onClick={handleHide}
+            style={{
+              padding: "12px 16px",
+              border: "none",
+              background: "none",
+              textAlign: "left",
+              fontSize: "14px",
+              fontWeight: "500",
+              cursor: "pointer",
+              color: "#e60023",
+              width: "100%",
+            }}
+          >
+            Hide Pin
+          </button>
         </div>
       )}
 
@@ -145,10 +214,28 @@ const PostInteractions = ({ postId }) => {
           />
         </svg>
         {data.likeCount}
-        <button onClick={handleShare} style={{ background: "none", border: "none", cursor: "pointer", display: "flex", padding: 0 }}>
+        <button
+          onClick={handleShare}
+          style={{
+            background: "none",
+            border: "none",
+            cursor: "pointer",
+            display: "flex",
+            padding: 0,
+          }}
+        >
           <Image path="/general/share.svg" alt="" />
         </button>
-        <button onClick={() => setShowMoreMenu(!showMoreMenu)} style={{ background: "none", border: "none", cursor: "pointer", display: "flex", padding: 0 }}>
+        <button
+          onClick={() => setShowMoreMenu(!showMoreMenu)}
+          style={{
+            background: "none",
+            border: "none",
+            cursor: "pointer",
+            display: "flex",
+            padding: 0,
+          }}
+        >
           <Image path="/general/more.svg" alt="" />
         </button>
       </div>
@@ -162,7 +249,7 @@ const PostInteractions = ({ postId }) => {
           padding: "12px 24px",
           borderRadius: "24px",
           fontWeight: "bold",
-          cursor: "pointer"
+          cursor: "pointer",
         }}
       >
         {data.isSaved ? "Saved" : "Save"}
