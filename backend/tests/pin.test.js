@@ -79,11 +79,10 @@ describe("Pin Interaction Tests", () => {
     expect(checkRes.body.isSaved).toBe(true);
     expect(checkRes.body.likeCount).toBe(1);
 
-    // 4. Fetch saved pins
     const savedRes = await request(app)
       .get(`/pins/saved/${userId}`);
     expect(savedRes.statusCode).toBe(200);
-    expect(savedRes.body.length).toBe(1);
-    expect(savedRes.body[0]._id).toBe(pinId);
+    expect(savedRes.body.pins.length).toBe(1);
+    expect(savedRes.body.pins[0]._id).toBe(pinId);
   });
 });
