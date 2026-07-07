@@ -171,7 +171,11 @@ import Skeleton from "../skeleton/skeleton";
 //   },
 // ];
 
-const fetchPins = async ({ pageParam, search, userId, boardId }) => {
+const fetchPins = async ({ pageParam, search, userId, boardId, savedUserId }) => {
+  if (savedUserId) {
+    const res = await axios.get(`${import.meta.env.VITE_API_ENDPOINT}/pins/saved/${savedUserId}?cursor=${pageParam}`);
+    return res.data;
+  }
   const res = await axios.get(
     `${import.meta.env.VITE_API_ENDPOINT}/pins?cursor=${pageParam}&search=${
       search || ""
@@ -180,13 +184,13 @@ const fetchPins = async ({ pageParam, search, userId, boardId }) => {
   return res.data;
 };
 
-const Gallery = ({ search, userId, boardId }) => {
+const Gallery = ({ search, userId, boardId, savedUserId, layoutMode = 'default' }) => {
   const { data, fetchNextPage, hasNextPage, status } = useInfiniteQuery({
     // queryKey: ["pins"],
     // FIXED QUERY KEY
-    queryKey: ["pins", search, userId, boardId],
+    queryKey: ["pins", search, userId, boardId, savedUserId],
     queryFn: ({ pageParam = 0 }) =>
-      fetchPins({ pageParam, search, userId, boardId }),
+      fetchPins({ pageParam, search, userId, boardId, savedUserId }),
     initialPageParam: 0,
     getNextPageParam: (lastPage, pages) => lastPage.nextCursor,
   });
@@ -206,7 +210,7 @@ const Gallery = ({ search, userId, boardId }) => {
       loader={<h4>Loading more pins</h4>}
       endMessage={<h3>All Posts Loaded!</h3>}
     >
-      <div className="gallery">
+      <div className={`gallery ${layoutMode}`}>
         {allPins?.map((item) => (
           <GalleryItem key={item._id} item={item} />
         ))}

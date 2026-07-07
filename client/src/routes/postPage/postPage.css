@@ -11,6 +11,27 @@
   border: 1px solid #e9e9e9;
   border-radius: 32px;
   overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.postContainer.expanded {
+  width: 95%;
+  max-height: unset;
+  flex-direction: column;
+}
+
+.postContainer.expanded .postImg {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  background-color: #f1f1f1;
+}
+
+.postContainer.expanded .postImg img {
+  width: auto;
+  height: auto;
+  max-width: 100%;
+  object-fit: scale-down;
 }
 
 .postImg {

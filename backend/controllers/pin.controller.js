@@ -4,8 +4,19 @@ import Like from "../models/like.model.js";
 import Save from "../models/save.model.js";
 import Board from "../models/board.model.js";
 import sharp from "sharp";
-import Imagekit from "imagekit";
 import jwt from "jsonwebtoken";
+import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
+
+// Configure MinIO S3 Client
+const s3 = new S3Client({
+  region: process.env.MINIO_REGION || "us-east-1",
+  endpoint: process.env.MINIO_ENDPOINT, // e.g. "http://127.0.0.1:9000"
+  credentials: {
+    accessKeyId: process.env.MINIO_ACCESS_KEY,
+    secretAccessKey: process.env.MINIO_SECRET_KEY,
+  },
+  forcePathStyle: true, // IMPORTANT for MinIO
+});
 
 export const getPins = async (req, res) => {
   const pageNumber = Number(req.query.cursor) || 0;
@@ -51,6 +62,27 @@ export const getPin = async (req, res) => {
   res.status(200).json(pin);
 };
 
+export const getSavedPins = async (req, res) => {
+  const userId = req.params.userId;
+  const pageNumber = Number(req.query.cursor) || 0;
+  const LIMIT = 21;
+
+  try {
+    const saves = await Save.find({ user: userId })
+      .populate("pin")
+      .skip(pageNumber * LIMIT)
+      .limit(LIMIT)
+      .sort({ createdAt: -1 });
+
+    const pins = saves.map((save) => save.pin).filter(pin => pin != null);
+    const hasNextPage = saves.length === LIMIT;
+
+    res.status(200).json({ pins, nextCursor: hasNextPage ? pageNumber + 1 : null });
+  } catch (err) {
+    res.status(500).json({ message: "Failed to fetch saved pins." });
+  }
+};
+
 export const createPin = async (req, res) => {
   const {
     title,
@@ -92,33 +124,13 @@ export const createPin = async (req, res) => {
       : (clientAspectRatio = 1 / originalAspectRatio);
   }
 
-  width = metadata.width;
-  height = metadata.width / clientAspectRatio;
-
-  const imagekit = new Imagekit({
-    publicKey: process.env.IK_PUBLIC_KEY,
-    privateKey: process.env.IK_PRIVATE_KEY,
-    urlEndpoint: process.env.IK_URL_ENDPOINT,
-  });
+  width = Math.round(metadata.width);
+  height = Math.round(metadata.width / clientAspectRatio);
 
   const textLeftPosition = Math.round((parsedTextOptions.left * width) / 375);
   const textTopPosition = Math.round(
     (parsedTextOptions.top * height) / parsedCanvasOptions.height
   );
-
-  // const transformationString = `w-${width},h-${height}${
-  //   originalAspectRatio > clientAspectRatio ? ",cm-pad_resize" : ""
-  // },bg-${parsedCanvasOptions.backgroundColor.substring(1)}${
-  //   parsedTextOptions.text
-  //     ? `,l-text,i-${parsedTextOptions.text},fs-${
-  //         parsedTextOptions.fontSize * 2.1
-  //       },lx-${textLeftPosition},ly-${textTopPosition},co-${parsedTextOptions.color.substring(
-  //         1
-  //       )},l-end`
-  //     : ""
-  // }`;
-
-  // FIXED TRANSFORMATION STRING
 
   let croppingStrategy = "";
 
@@ -135,56 +147,74 @@ export const createPin = async (req, res) => {
     }
   }
 
-  const transformationString = `w-${width},h-${height}${croppingStrategy},bg-${parsedCanvasOptions.backgroundColor.substring(
-    1
-  )}${
-    parsedTextOptions.text
-      ? `,l-text,i-${parsedTextOptions.text},fs-${
-          parsedTextOptions.fontSize * 2.1
-        },lx-${textLeftPosition},ly-${textTopPosition},co-${parsedTextOptions.color.substring(
-          1
-        )},l-end`
-      : ""
-  }`;
+  const fileName = Date.now() + "-" + media.name.replace(/\s+/g, '-');
 
-  imagekit
-    .upload({
-      file: media.data,
-      fileName: media.name,
-      folder: "test",
-      transformation: {
-        pre: transformationString,
-      },
-    })
-    .then(async (response) => {
-      // FIXED: ADD NEW BOARD
-      let newBoardId;
+  const resizeOptions = {
+    width: width,
+    height: height,
+  };
 
-      if (newBoard) {
-        const res = await Board.create({
-          title: newBoard,
-          user: req.userId,
-        });
-        newBoardId = res._id;
-      }
+  if (croppingStrategy === ",cm-pad_resize") {
+    resizeOptions.fit = "contain";
+    resizeOptions.background = parsedCanvasOptions.backgroundColor || "#ffffff";
+  } else {
+    resizeOptions.fit = "cover";
+  }
 
-      const newPin = await Pin.create({
+  const sharpInstance = sharp(media.data).resize(resizeOptions);
+
+  if (parsedTextOptions.text) {
+    const fontSize = Math.round(parsedTextOptions.fontSize * 2.1);
+    const svgText = `
+      <svg width="${width}" height="${height}">
+        <text x="${textLeftPosition}" y="${textTopPosition + fontSize}" font-size="${fontSize}" font-family="Arial, sans-serif" fill="${parsedTextOptions.color || '#000'}">${parsedTextOptions.text}</text>
+      </svg>
+    `;
+    sharpInstance.composite([{ input: Buffer.from(svgText), top: 0, left: 0 }]);
+  }
+
+  try {
+    // Process image to buffer
+    const processedBuffer = await sharpInstance.toBuffer();
+    
+    // Upload to MinIO
+    const bucketName = process.env.MINIO_BUCKET_NAME || "pinterest";
+    await s3.send(
+      new PutObjectCommand({
+        Bucket: bucketName,
+        Key: fileName,
+        Body: processedBuffer,
+        ContentType: media.mimetype || "image/jpeg",
+      })
+    );
+
+    let newBoardId;
+
+    if (newBoard) {
+      const res = await Board.create({
+        title: newBoard,
         user: req.userId,
-        title,
-        description,
-        link: link || null,
-        board: newBoardId || board || null,
-        tags: tags ? tags.split(",").map((tag) => tag.trim()) : [],
-        media: response.filePath,
-        width: response.width,
-        height: response.height,
       });
-      return res.status(201).json(newPin);
-    })
-    .catch((err) => {
-      console.log(err);
-      return res.status(500).json(err);
+      newBoardId = res._id;
+    }
+
+    const newPin = await Pin.create({
+      user: req.userId,
+      title,
+      description,
+      link: link || null,
+      board: newBoardId || board || null,
+      tags: tags ? tags.split(",").map((tag) => tag.trim()) : [],
+      media: fileName, // Only store the key/filename in DB
+      width: width,
+      height: height,
     });
+    
+    return res.status(201).json(newPin);
+  } catch (err) {
+    console.log(err);
+    return res.status(500).json(err);
+  }
 };
 
 export const interactionCheck = async (req, res) => {

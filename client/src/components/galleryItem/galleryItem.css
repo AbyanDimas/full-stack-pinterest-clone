@@ -1,6 +1,8 @@
 .galleryItem {
   display: flex;
   position: relative;
+  break-inside: avoid;
+  margin-bottom: 16px;
 }
 
 .galleryItem img {
@@ -69,5 +71,53 @@
 }
 
 .overlayIcons button:hover {
+  background-color: #f1f1f1;
+}
+
+.customToast {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: rgba(0, 0, 0, 0.8);
+  color: white;
+  padding: 12px 24px;
+  border-radius: 24px;
+  font-weight: 500;
+  font-size: 14px;
+  pointer-events: none;
+  z-index: 100;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.moreMenuDropdown {
+  position: absolute;
+  bottom: 60px;
+  right: 16px;
+  background-color: white;
+  border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  z-index: 100;
+  min-width: 150px;
+}
+
+.moreMenuDropdown button {
+  padding: 12px 16px;
+  border: none;
+  background: none;
+  text-align: left;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  color: #111;
+  transition: background-color 0.2s;
+  width: 100%;
+}
+
+.moreMenuDropdown button:hover {
   background-color: #f1f1f1;
 }

@@ -66,7 +66,7 @@ const ProfilePage = () => {
       {type === "created" ? (
         <Gallery userId={data._id} />
       ) : (
-        <Boards userId={data._id} />
+        <Gallery savedUserId={data._id} />
       )}
     </div>
   );
