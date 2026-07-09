@@ -145,7 +145,7 @@ jobs:
   # ==========================================
   lighthouse-check:
     name: Lighthouse Performance Check
-    needs: test-frontend
+    needs: [test-backend, test-frontend]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
@@ -170,7 +170,7 @@ jobs:
   # ==========================================
   build-backend-docker:
     name: Build & Push Backend Docker Image
-    needs: test-backend
+    needs: [analyze-codeql, lighthouse-check]
     runs-on: ubuntu-latest
     steps:
     - name: Check out repository
@@ -193,7 +193,7 @@ jobs:
 
   build-frontend-docker:
     name: Build & Push Frontend Docker Image
-    needs: test-frontend
+    needs: [analyze-codeql, lighthouse-check]
     runs-on: ubuntu-latest
     steps:
     - name: Check out repository
@@ -245,7 +245,7 @@ jobs:
   release:
     name: Generate Automatic Release
     # Release only happens if EVERYTHING else passes successfully!
-    needs: [analyze-codeql, lighthouse-check, cdk8s-synth]
+    needs: [cdk8s-synth]
     runs-on: ubuntu-latest
     permissions:
       contents: write
