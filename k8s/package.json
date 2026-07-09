@@ -1,0 +1,20 @@
+{
+  "name": "full-stack-pinterest-k8s",
+  "version": "1.0.0",
+  "description": "Kubernetes deployment with cdk8s",
+  "main": "main.js",
+  "scripts": {
+    "compile": "tsc",
+    "synth": "npx ts-node main.ts"
+  },
+  "dependencies": {
+    "cdk8s": "^2.68.80",
+    "cdk8s-plus-27": "^2.1.28",
+    "constructs": "^10.4.0"
+  },
+  "devDependencies": {
+    "@types/node": "^18.15.11",
+    "ts-node": "^10.9.1",
+    "typescript": "^5.0.4"
+  }
+}
