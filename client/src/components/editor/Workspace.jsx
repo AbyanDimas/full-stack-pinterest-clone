@@ -70,11 +70,17 @@ const Workspace = ({ previewImg }) => {
         <img
           src={(() => {
             try {
-              if (previewImg.url?.startsWith('data:') || previewImg.url?.startsWith('blob:')) {
+              if (
+                previewImg.url?.startsWith("data:") ||
+                previewImg.url?.startsWith("blob:")
+              ) {
                 return previewImg.url;
               }
               const parsedUrl = new URL(previewImg.url);
-              if (parsedUrl.protocol === "http:" || parsedUrl.protocol === "https:") {
+              if (
+                parsedUrl.protocol === "http:" ||
+                parsedUrl.protocol === "https:"
+              ) {
                 return parsedUrl.toString();
               }
             } catch (err) {
