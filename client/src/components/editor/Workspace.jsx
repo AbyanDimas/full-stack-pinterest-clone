@@ -67,15 +67,15 @@ const Workspace = ({ previewImg }) => {
         onMouseLeave={handleMouseLeave}
         ref={containerRef}
       >
-        <img 
+        <img
           src={
-            previewImg.url?.startsWith("http") || 
-            previewImg.url?.startsWith("data:image/") || 
-            previewImg.url?.startsWith("blob:") 
-              ? previewImg.url 
+            previewImg.url?.startsWith("http") ||
+            previewImg.url?.startsWith("data:image/") ||
+            previewImg.url?.startsWith("blob:")
+              ? previewImg.url
               : ""
-          } 
-          alt="" 
+          }
+          alt=""
         />
         {textOptions.text && (
           <div

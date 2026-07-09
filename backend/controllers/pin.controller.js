@@ -26,7 +26,7 @@ export const getPins = async (req, res) => {
   const LIMIT = 21;
 
   const escapeRegex = (string) => {
-    return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    return string.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
   };
   const safeSearch = search ? escapeRegex(String(search)) : null;
 
