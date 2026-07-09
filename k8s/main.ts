@@ -22,7 +22,7 @@ export class AppChart extends Chart {
       metadata: { name: 'backend' },
       containers: [{
         name: 'backend',
-        image: 'your-docker-registry/pinterest-backend:latest', // Replace with your actual backend image
+        image: `${process.env.DOCKERHUB_USERNAME || 'abyandimas'}/full-stack-pinterest-backend:latest`,
         portNumber: 3000,
         resources: {
           cpu: { request: kplus.Cpu.millis(100), limit: kplus.Cpu.millis(500) },
@@ -30,8 +30,10 @@ export class AppChart extends Chart {
         },
         envVariables: {
           NODE_ENV: kplus.EnvValue.fromValue('production'),
-          // Add other required env vars here like DB connection strings
-        }
+        },
+        envFrom: [
+          kplus.Env.fromSecret(kplus.Secret.fromSecretName(this, 'BackendSecret', 'backend-secrets'))
+        ]
       }]
     });
 
@@ -52,7 +54,7 @@ export class AppChart extends Chart {
       metadata: { name: 'frontend' },
       containers: [{
         name: 'frontend',
-        image: 'your-docker-registry/pinterest-client:latest', // Replace with your actual frontend image
+        image: `${process.env.DOCKERHUB_USERNAME || 'abyandimas'}/full-stack-pinterest-frontend:latest`,
         portNumber: 80,
         resources: {
           cpu: { request: kplus.Cpu.millis(50), limit: kplus.Cpu.millis(250) },
