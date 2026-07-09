@@ -39,9 +39,9 @@ export const getPins = async (req, res) => {
           ],
         }
       : userId
-        ? { user: userId }
+        ? { user: String(userId) }
         : boardId
-          ? { board: boardId }
+          ? { board: String(boardId) }
           : {},
   )
     .limit(LIMIT)

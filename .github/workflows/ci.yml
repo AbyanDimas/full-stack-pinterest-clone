@@ -287,3 +287,20 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: npx semantic-release
+      - name: Append Docker Info to Release Notes
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          # Wait a few seconds for semantic-release to finish creating the release in GitHub
+          sleep 5
+          LATEST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
+          if [ ! -z "$LATEST_TAG" ]; then
+            echo "Appending Docker image info to release $LATEST_TAG"
+            gh release edit $LATEST_TAG --notes-append "
+
+## 🐳 Docker Images
+Images have been successfully pushed to Docker Hub and are ready for deployment:
+- **Frontend**: \`${{ secrets.DOCKERHUB_USERNAME }}/full-stack-pinterest-frontend:latest\`
+- **Backend**: \`${{ secrets.DOCKERHUB_USERNAME }}/full-stack-pinterest-backend:latest\`
+            " || echo "Failed to edit release notes, but semantic release succeeded."
+          fi
