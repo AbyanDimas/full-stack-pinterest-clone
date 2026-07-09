@@ -228,6 +228,10 @@ jobs:
         context: ./client
         push: true
         tags: ${{ secrets.DOCKERHUB_USERNAME }}/full-stack-pinterest-frontend:latest
+        build-args: |
+          VITE_API_ENDPOINT=${{ secrets.VITE_API_ENDPOINT }}
+          VITE_IMGPROXY_URL=${{ secrets.VITE_IMGPROXY_URL }}
+          VITE_MINIO_BUCKET=${{ secrets.VITE_MINIO_BUCKET }}
         cache-from: type=gha
         cache-to: type=gha,mode=max
 
