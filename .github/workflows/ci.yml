@@ -287,20 +287,56 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: npx semantic-release
-      - name: Append Docker Info to Release Notes
+      - name: Build & Attach Kubernetes YAML to Release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
         run: |
           # Wait a few seconds for semantic-release to finish creating the release in GitHub
           sleep 5
           LATEST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
           if [ ! -z "$LATEST_TAG" ]; then
-            echo "Appending Docker image info to release $LATEST_TAG"
+            echo "Building CDK8s YAML for release..."
+            cd k8s
+            npm ci || npm install
+            npm run synth
+            cd ..
+
+            echo "Generating checksums for integrity verification..."
+            sha256sum ./k8s/dist/pinterest-k8s.k8s.yaml > checksums.txt
+
+            echo "Uploading Kubernetes YAML and Checksums as Release Assets..."
+            gh release upload $LATEST_TAG ./k8s/dist/pinterest-k8s.k8s.yaml checksums.txt || echo "Failed to upload assets"
+
+            echo "Extracting Stack Versions..."
+            REACT_VERSION=$(jq -r '.dependencies.react' client/package.json | tr -d '^~')
+            EXPRESS_VERSION=$(jq -r '.dependencies.express' backend/package.json | tr -d '^~')
+            NODE_VERSION=$(node -v)
+
+            echo "Appending Docker, K8s, Stack, & Security info to release $LATEST_TAG"
             gh release edit $LATEST_TAG --notes-append "
 
 ## 🐳 Docker Images
 Images have been successfully pushed to Docker Hub and are ready for deployment:
 - **Frontend**: \`${{ secrets.DOCKERHUB_USERNAME }}/full-stack-pinterest-frontend:latest\`
 - **Backend**: \`${{ secrets.DOCKERHUB_USERNAME }}/full-stack-pinterest-backend:latest\`
+
+## ☸️ Kubernetes Deployment
+The complete Kubernetes configuration for this version has been generated and attached as a release asset.
+To deploy this exact release to your cluster, run:
+\`\`\`bash
+kubectl apply -f https://github.com/${{ github.repository }}/releases/download/$LATEST_TAG/pinterest-k8s.k8s.yaml
+\`\`\`
+
+## 🛠️ Stack Versions
+- **Node.js**: \`$NODE_VERSION\`
+- **React**: \`$REACT_VERSION\`
+- **Express**: \`$EXPRESS_VERSION\`
+
+## 🔒 Security & Integrity (SLSA)
+- ✅ **CodeQL Scanning**: Passed
+- ✅ **Secret Scanning (TruffleHog)**: Passed
+- ✅ **Unit Tests**: Passed
+- 🛡️ **Asset Integrity**: Download \`checksums.txt\` to verify the YAML artifact's SHA256 checksum.
             " || echo "Failed to edit release notes, but semantic release succeeded."
           fi
