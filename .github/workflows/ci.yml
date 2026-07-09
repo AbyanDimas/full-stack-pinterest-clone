@@ -258,6 +258,8 @@ jobs:
     - name: Run CDK8s Compile
       run: npm run compile
     - name: Run CDK8s Synth
+      env:
+        DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
       run: npm run synth
 
   # ==========================================
