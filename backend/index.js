@@ -31,11 +31,19 @@ app.use(cors({ origin: process.env.CLIENT_URL, credentials: true }));
 app.use(cookieParser());
 
 // CSRF Protection (Configured to pass CodeQL static analysis without breaking SPA)
-if (process.env.NODE_ENV !== 'test') {
+if (process.env.NODE_ENV !== "test") {
   app.use(
     csrf({
       cookie: true,
-      ignoreMethods: ["GET", "HEAD", "OPTIONS", "POST", "PUT", "DELETE", "PATCH"],
+      ignoreMethods: [
+        "GET",
+        "HEAD",
+        "OPTIONS",
+        "POST",
+        "PUT",
+        "DELETE",
+        "PATCH",
+      ],
     }),
   );
 }
