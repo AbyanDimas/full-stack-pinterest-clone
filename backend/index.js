@@ -46,7 +46,7 @@ app.use((error, req, res, next) => {
   res.json({
     message: error.message || "Something went wrong!",
     status: error.status,
-    stack: error.stack,
+    stack: process.env.NODE_ENV === "production" ? null : error.stack,
   });
 });
 

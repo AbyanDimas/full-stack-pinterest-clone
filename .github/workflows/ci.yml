@@ -38,12 +38,29 @@ jobs:
           commit_message: "style: auto format code with prettier"
           branch: ${{ github.head_ref }}
 
+  secret-scanning:
+    name: Secret Scanning (TruffleHog)
+    needs: format-code
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: TruffleHog OSS
+        uses: trufflesecurity/trufflehog@main
+        with:
+          path: ./
+          base: ""
+          head: ${{ github.ref_name }}
+          extra_args: --debug --only-verified
+
   # ==========================================
   # 1. NPM AUDIT (SECURITY)
   # ==========================================
   npm-audit-backend:
     name: Backend Security Audit
-    needs: format-code
+    needs: [format-code, secret-scanning]
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -60,7 +77,7 @@ jobs:
 
   npm-audit-frontend:
     name: Frontend Security Audit
-    needs: format-code
+    needs: [format-code, secret-scanning]
     runs-on: ubuntu-latest
     defaults:
       run:

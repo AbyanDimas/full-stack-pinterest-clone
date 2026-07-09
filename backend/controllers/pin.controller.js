@@ -25,12 +25,17 @@ export const getPins = async (req, res) => {
   const boardId = req.query.boardId;
   const LIMIT = 21;
 
+  const escapeRegex = (string) => {
+    return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  };
+  const safeSearch = search ? escapeRegex(String(search)) : null;
+
   const pins = await Pin.find(
-    search
+    safeSearch
       ? {
           $or: [
-            { title: { $regex: search, $options: "i" } },
-            { tags: { $in: [search] } },
+            { title: { $regex: safeSearch, $options: "i" } },
+            { tags: { $in: [safeSearch] } },
           ],
         }
       : userId
@@ -215,7 +220,7 @@ export const createPin = async (req, res) => {
     return res.status(201).json(newPin);
   } catch (err) {
     console.log(err);
-    return res.status(500).json(err);
+    return res.status(500).json({ message: "An error occurred" });
   }
 };
 

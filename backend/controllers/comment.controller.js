@@ -21,7 +21,7 @@ export const addComment = async (req, res) => {
   const comment = await Comment.create({ description, pin, user: userId });
 
   // Create notification for post owner
-  const post = await Pin.findById(pin);
+  const post = await Pin.findById(String(pin));
   if (post && post.user.toString() !== userId) {
     await Notification.create({
       recipient: post.user,
