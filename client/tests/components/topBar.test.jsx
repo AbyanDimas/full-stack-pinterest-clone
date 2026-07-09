@@ -1,6 +1,6 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import { describe, it, expect, vi } from 'vitest';
-import TopBar from './topBar';
+import TopBar from '../../src/components/topBar/topBar';
 
 // Mock react-router
 const mockNavigate = vi.fn();
@@ -9,11 +9,11 @@ vi.mock('react-router', () => ({
 }));
 
 // Mock child components to isolate TopBar
-vi.mock('../image/image', () => ({
+vi.mock('../../src/components/image/image', () => ({
   default: () => <div data-testid="mock-image">Mock Image</div>,
 }));
 
-vi.mock('../userButton/userButton', () => ({
+vi.mock('../../src/components/userButton/userButton', () => ({
   default: () => <div data-testid="mock-user-button">Mock User Button</div>,
 }));
 

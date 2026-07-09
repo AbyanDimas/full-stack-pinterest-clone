@@ -1,6 +1,6 @@
 import { render, screen } from "@testing-library/react";
 import { describe, it, expect } from "vitest";
-import Image from "./image";
+import Image from "../../src/components/image/image";
 
 describe("Image Component", () => {
   it("renders correctly with local path", () => {

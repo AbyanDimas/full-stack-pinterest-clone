@@ -1,8 +1,8 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import UserButton from './userButton';
+import UserButton from '../../src/components/userButton/userButton';
 import { BrowserRouter } from 'react-router';
-import apiRequest from '../../utils/apiRequest';
+import apiRequest from '../../src/utils/apiRequest';
 
 // Mock react-router
 const mockNavigate = vi.fn();
@@ -15,21 +15,21 @@ vi.mock('react-router', async () => {
 });
 
 // Mock apiRequest
-vi.mock('../../utils/apiRequest', () => ({
+vi.mock('../../src/utils/apiRequest', () => ({
   default: {
     post: vi.fn(),
   },
 }));
 
 // Mock Image component
-vi.mock('../image/image', () => ({
+vi.mock('../../src/components/image/image', () => ({
   default: ({ path, alt, className }) => <img src={path} alt={alt} className={className} data-testid="mock-image" />,
 }));
 
 // Mock auth store
 let mockCurrentUser = null;
 const mockRemoveCurrentUser = vi.fn();
-vi.mock('../../utils/authStore', () => ({
+vi.mock('../../src/utils/authStore', () => ({
   default: () => ({
     currentUser: mockCurrentUser,
     removeCurrentUser: mockRemoveCurrentUser,

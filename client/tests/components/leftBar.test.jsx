@@ -1,10 +1,10 @@
 import { render, screen } from '@testing-library/react';
 import { describe, it, expect, vi } from 'vitest';
-import LeftBar from './leftBar';
+import LeftBar from '../../src/components/leftBar/leftBar';
 import { BrowserRouter } from 'react-router';
 
 // Mock Image component
-vi.mock('../image/image', () => ({
+vi.mock('../../src/components/image/image', () => ({
   default: ({ path, alt, className }) => <img src={path} alt={alt} className={className} data-testid="mock-image" />,
 }));
 
