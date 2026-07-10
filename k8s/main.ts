@@ -22,7 +22,7 @@ export class AppChart extends Chart {
       metadata: { name: 'backend' },
       containers: [{
         name: 'backend',
-        image: `${process.env.DOCKERHUB_USERNAME || 'abyandimas'}/full-stack-pinterest-backend:latest`,
+        image: `${process.env.DOCKERHUB_USERNAME || 'abyandimas'}/full-stack-pinterest-backend:${process.env.IMAGE_TAG || 'latest'}`,
         portNumber: 3000,
         resources: {
           cpu: { request: kplus.Cpu.millis(100), limit: kplus.Cpu.millis(500) },
@@ -54,7 +54,7 @@ export class AppChart extends Chart {
       metadata: { name: 'frontend' },
       containers: [{
         name: 'frontend',
-        image: `${process.env.DOCKERHUB_USERNAME || 'abyandimas'}/full-stack-pinterest-frontend:latest`,
+        image: `${process.env.DOCKERHUB_USERNAME || 'abyandimas'}/full-stack-pinterest-frontend:${process.env.IMAGE_TAG || 'latest'}`,
         portNumber: 80,
         resources: {
           cpu: { request: kplus.Cpu.millis(50), limit: kplus.Cpu.millis(250) },
