@@ -1,5 +1,5 @@
 import { Construct } from 'constructs';
-import { App, Chart, ChartProps, Size } from 'cdk8s';
+import { App, Chart, ChartProps, ApiObject, Size } from 'cdk8s';
 import * as kplus from 'cdk8s-plus-27';
 
 export class AppChart extends Chart {
@@ -85,9 +85,19 @@ export class AppChart extends Chart {
 
     // Imgproxy External Service (Running in Docker Compose on the host)
     const imgproxyService = new kplus.Service(this, 'ImgproxyService', {
-      type: kplus.ServiceType.EXTERNAL_NAME,
-      externalName: '52.200.119.20',
-      ports: [{ port: 8080 }]
+      ports: [{ port: 8080, targetPort: 8080 }]
+    });
+
+    new ApiObject(this, 'ImgproxyEndpoints', {
+      apiVersion: 'v1',
+      kind: 'Endpoints',
+      metadata: {
+        name: imgproxyService.name
+      },
+      subsets: [{
+        addresses: [{ ip: '172.31.11.0' }],
+        ports: [{ port: 8080 }]
+      }]
     });
 
     // Ingress to expose the app using K3s default Traefik

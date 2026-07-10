@@ -6,7 +6,7 @@ const Image = ({ path, src, alt, className, w, h }) => {
       // It's a MinIO uploaded file
       // URL format: <IMGPROXY_URL>/insecure/rs:fill:<w>:<h>/plain/s3://<BUCKET_NAME>/<FILE_NAME>
       const imgProxyUrl =
-        import.meta.env.VITE_IMGPROXY_URL || "http://localhost:8080";
+        import.meta.env.VITE_IMGPROXY_URL || "https://imgproxy.abyandimas.me";
       const bucketName = import.meta.env.VITE_MINIO_BUCKET || "pinterest";
 
       // If width/height are provided, use them for imgproxy resizing
