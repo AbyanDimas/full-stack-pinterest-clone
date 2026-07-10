@@ -33,7 +33,10 @@ export class AppChart extends Chart {
         },
         envFrom: [
           kplus.Env.fromSecret(kplus.Secret.fromSecretName(this, 'BackendSecret', 'backend-secrets'))
-        ]
+        ],
+        securityContext: {
+          ensureNonRoot: false,
+        }
       }]
     });
 
@@ -60,6 +63,9 @@ export class AppChart extends Chart {
           cpu: { request: kplus.Cpu.millis(50), limit: kplus.Cpu.millis(250) },
           memory: { request: Size.mebibytes(64), limit: Size.mebibytes(256) },
         },
+        securityContext: {
+          ensureNonRoot: false,
+        }
       }]
     });
 
