@@ -5,6 +5,7 @@ on:
     branches: [ "main", "master", "completed" ]
   pull_request:
     branches: [ "main", "master", "completed" ]
+  workflow_dispatch:
   schedule:
     - cron: '0 0 * * *'
 
