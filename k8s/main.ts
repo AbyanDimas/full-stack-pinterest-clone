@@ -79,6 +79,7 @@ export class AppChart extends Chart {
     const imgproxyService = new kplus.Service(this, 'ImgproxyService', {
       type: kplus.ServiceType.EXTERNAL_NAME,
       externalName: '52.200.119.20',
+      ports: [{ port: 8080 }]
     });
 
     // Ingress to expose the app using K3s default Traefik
