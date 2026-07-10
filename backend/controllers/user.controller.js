@@ -141,9 +141,11 @@ export const followUser = async (req, res) => {
 
 export const updateUser = async (req, res) => {
   const { id } = req.params;
-  
+
   if (req.userId !== id) {
-    return res.status(403).json({ message: "You can only update your own account!" });
+    return res
+      .status(403)
+      .json({ message: "You can only update your own account!" });
   }
 
   const { username, displayName, email } = req.body;
@@ -156,7 +158,7 @@ export const updateUser = async (req, res) => {
   if (req.files && req.files.media) {
     const media = req.files.media;
     const fileName = `profile-${Date.now()}-${crypto.randomBytes(4).toString("hex")}.jpg`;
-    
+
     try {
       const processedBuffer = await sharp(media.data)
         .resize(300, 300, { fit: "cover" })
@@ -170,18 +172,22 @@ export const updateUser = async (req, res) => {
           Key: fileName,
           Body: processedBuffer,
           ContentType: "image/jpeg",
-        })
+        }),
       );
-      
+
       updateData.img = fileName;
     } catch (uploadErr) {
       console.error("Profile image upload failed:", uploadErr);
-      return res.status(500).json({ message: "Failed to upload profile image!" });
+      return res
+        .status(500)
+        .json({ message: "Failed to upload profile image!" });
     }
   }
 
   try {
-    const updatedUser = await User.findByIdAndUpdate(id, updateData, { new: true }).select("-hashedPassword");
+    const updatedUser = await User.findByIdAndUpdate(id, updateData, {
+      new: true,
+    }).select("-hashedPassword");
     res.status(200).json(updatedUser);
   } catch (err) {
     console.error(err);

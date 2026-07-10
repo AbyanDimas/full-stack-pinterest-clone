@@ -54,7 +54,7 @@ const SettingsPage = () => {
     formDataPayload.append("displayName", formData.displayName);
     formDataPayload.append("username", formData.username);
     formDataPayload.append("email", formData.email);
-    
+
     if (file) {
       formDataPayload.append("media", file);
     }
