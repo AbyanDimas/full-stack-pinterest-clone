@@ -1,0 +1,229 @@
+.settingsPage {
+  display: flex;
+  gap: 40px;
+  max-width: 1000px;
+  margin: 40px auto;
+  padding: 0 20px;
+  min-height: calc(100vh - 120px);
+}
+
+.settingsSidebar {
+  flex: 1;
+  max-width: 250px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.settingsSidebar h2 {
+  font-size: 20px;
+  font-weight: 600;
+  margin-bottom: 10px;
+  color: var(--text-color);
+}
+
+.settingsSidebar button {
+  text-align: left;
+  padding: 12px 16px;
+  border-radius: 8px;
+  border: none;
+  background: transparent;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  color: var(--text-color);
+}
+
+.settingsSidebar button:hover {
+  background: #f0f0f0;
+}
+
+.settingsSidebar button.active {
+  background: var(--text-color);
+  color: white;
+}
+
+.settingsContent {
+  flex: 3;
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+.settingsSection {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.settingsSection h1 {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--text-color);
+  margin-bottom: 8px;
+}
+
+.settingsSection p {
+  color: #5f5f5f;
+  font-size: 15px;
+}
+
+.settingsForm {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  background: white;
+  padding: 32px;
+  border-radius: 24px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.05);
+}
+
+.settingsFormGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.settingsFormGroup label {
+  font-size: 14px;
+  font-weight: 500;
+  color: #111;
+}
+
+.settingsFormGroup input {
+  padding: 14px 16px;
+  border-radius: 12px;
+  border: 1px solid #ccc;
+  font-size: 16px;
+  transition: all 0.2s;
+}
+
+.settingsFormGroup input:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 0 4px rgba(0, 123, 255, 0.1);
+}
+
+.settingsProfilePic {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
+.settingsProfilePic img {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  object-fit: cover;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.settingsProfilePic label {
+  padding: 10px 20px;
+  background: #efefef;
+  border-radius: 24px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-size: 14px;
+}
+
+.settingsProfilePic label:hover {
+  background: #e2e2e2;
+}
+
+.settingsProfilePic input {
+  display: none;
+}
+
+.settingsActions {
+  display: flex;
+  gap: 16px;
+  justify-content: flex-end;
+  margin-top: 16px;
+}
+
+.settingsActions button {
+  padding: 12px 24px;
+  border-radius: 24px;
+  font-weight: 600;
+  font-size: 15px;
+  cursor: pointer;
+  border: none;
+  transition: all 0.2s;
+}
+
+.settingsActions button[type="button"] {
+  background: #efefef;
+  color: #111;
+}
+
+.settingsActions button[type="button"]:hover {
+  background: #e2e2e2;
+}
+
+.settingsActions button[type="submit"] {
+  background: #e60023;
+  color: white;
+}
+
+.settingsActions button[type="submit"]:hover {
+  background: #ad081b;
+}
+
+.settingsActions button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.dangerZone {
+  background: #fff5f5;
+  border: 1px solid #ffe3e3;
+  padding: 24px;
+  border-radius: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.dangerZone h3 {
+  color: #e60023;
+  font-size: 18px;
+  margin: 0;
+}
+
+.dangerZone p {
+  color: #767676;
+  margin: 0;
+  font-size: 14px;
+}
+
+.dangerZone button {
+  align-self: flex-start;
+  padding: 10px 20px;
+  border-radius: 24px;
+  border: none;
+  background: #e60023;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.dangerZone button:hover {
+  background: #ad081b;
+}
+
+@media (max-width: 768px) {
+  .settingsPage {
+    flex-direction: column;
+  }
+
+  .settingsSidebar {
+    flex-direction: row;
+    max-width: 100%;
+    overflow-x: auto;
+    padding-bottom: 10px;
+  }
+}

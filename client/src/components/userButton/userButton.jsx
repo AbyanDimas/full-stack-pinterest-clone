@@ -15,7 +15,7 @@ const UserButton = () => {
 
   const { currentUser, removeCurrentUser } = useAuthStore();
 
-  console.log(currentUser);
+
 
   const handleLogout = async () => {
     try {

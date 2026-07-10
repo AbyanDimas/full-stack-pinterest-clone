@@ -2,6 +2,19 @@ import User from "../models/user.model.js";
 import Follow from "../models/follow.model.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
+import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
+import sharp from "sharp";
+import crypto from "crypto";
+
+const s3 = new S3Client({
+  region: process.env.MINIO_REGION || "us-east-1",
+  endpoint: process.env.MINIO_ENDPOINT || "http://localhost:9000",
+  credentials: {
+    accessKeyId: process.env.MINIO_ACCESS_KEY || "root",
+    secretAccessKey: process.env.MINIO_SECRET_KEY || "rootroot",
+  },
+  forcePathStyle: true,
+});
 
 export const registerUser = async (req, res) => {
   const { username, displayName, email, password } = req.body;
@@ -124,4 +137,54 @@ export const followUser = async (req, res) => {
   }
 
   res.status(200).json({ message: "Successful" });
+};
+
+export const updateUser = async (req, res) => {
+  const { id } = req.params;
+  
+  if (req.userId !== id) {
+    return res.status(403).json({ message: "You can only update your own account!" });
+  }
+
+  const { username, displayName, email } = req.body;
+  const updateData = {};
+  if (username) updateData.username = username;
+  if (displayName) updateData.displayName = displayName;
+  if (email) updateData.email = email;
+
+  // Handle image upload if a file was provided
+  if (req.files && req.files.media) {
+    const media = req.files.media;
+    const fileName = `profile-${Date.now()}-${crypto.randomBytes(4).toString("hex")}.jpg`;
+    
+    try {
+      const processedBuffer = await sharp(media.data)
+        .resize(300, 300, { fit: "cover" })
+        .jpeg({ quality: 80 })
+        .toBuffer();
+
+      const bucketName = process.env.MINIO_BUCKET_NAME || "pinterest";
+      await s3.send(
+        new PutObjectCommand({
+          Bucket: bucketName,
+          Key: fileName,
+          Body: processedBuffer,
+          ContentType: "image/jpeg",
+        })
+      );
+      
+      updateData.img = fileName;
+    } catch (uploadErr) {
+      console.error("Profile image upload failed:", uploadErr);
+      return res.status(500).json({ message: "Failed to upload profile image!" });
+    }
+  }
+
+  try {
+    const updatedUser = await User.findByIdAndUpdate(id, updateData, { new: true }).select("-hashedPassword");
+    res.status(200).json(updatedUser);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Failed to update user!" });
+  }
 };

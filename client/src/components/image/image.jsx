@@ -2,7 +2,9 @@ const Image = ({ path, src, alt, className, w, h }) => {
   let finalSrc = src;
 
   if (path) {
-    if (!path.startsWith("/general") && !path.startsWith("/pins")) {
+    if (path.startsWith("http://") || path.startsWith("https://")) {
+      finalSrc = path;
+    } else if (!path.startsWith("/general") && !path.startsWith("/pins")) {
       // It's a MinIO uploaded file
       // URL format: <IMGPROXY_URL>/insecure/rs:fill:<w>:<h>/plain/s3://<BUCKET_NAME>/<FILE_NAME>
       const imgProxyUrl =
