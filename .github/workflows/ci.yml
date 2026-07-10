@@ -326,35 +326,28 @@ jobs:
             export REACT_VERSION
             export EXPRESS_VERSION
             export GITHUB_REPOSITORY=${{ github.repository }}
-            cat << 'EOF' > generate_notes.js
-            const fs = require('fs');
-            const text = `
-            ## 🐳 Docker Images
-            Images have been successfully pushed to Docker Hub and are ready for deployment:
-            - **Frontend**: \`${process.env.DOCKERHUB_USERNAME}/full-stack-pinterest-frontend:${process.env.IMAGE_TAG}\`
-            - **Backend**: \`${process.env.DOCKERHUB_USERNAME}/full-stack-pinterest-backend:${process.env.IMAGE_TAG}\`
-            
-            ## ☸️ Kubernetes Deployment
-            The complete Kubernetes configuration for this version has been generated and attached as a release asset.
-            To deploy this exact release to your cluster, run:
-            \`\`\`bash
-            kubectl apply -f https://github.com/${process.env.GITHUB_REPOSITORY}/releases/download/${process.env.LATEST_TAG}/pinterest-k8s.k8s.yaml
-            \`\`\`
-            
-            ## 🛠️ Stack Versions
-            - **Node.js**: \`${process.env.NODE_VERSION}\`
-            - **React**: \`${process.env.REACT_VERSION}\`
-            - **Express**: \`${process.env.EXPRESS_VERSION}\`
-            
-            ## 🔒 Security & Integrity (SLSA)
-            - ✅ **CodeQL Scanning**: Passed
-            - ✅ **Secret Scanning (TruffleHog)**: Passed
-            - ✅ **Unit Tests**: Passed
-            - 🛡️ **Asset Integrity**: Download \`checksums.txt\` to verify the YAML artifact's SHA256 checksum.
-            `.replace(/^ {12}/gm, '').trim();
-            fs.writeFileSync('release_notes.txt', text);
-EOF
-            node generate_notes.js
+            echo "## 🐳 Docker Images" > release_notes.txt
+            echo "Images have been successfully pushed to Docker Hub and are ready for deployment:" >> release_notes.txt
+            echo "- **Frontend**: \`${DOCKERHUB_USERNAME}/full-stack-pinterest-frontend:${IMAGE_TAG}\`" >> release_notes.txt
+            echo "- **Backend**: \`${DOCKERHUB_USERNAME}/full-stack-pinterest-backend:${IMAGE_TAG}\`" >> release_notes.txt
+            echo "" >> release_notes.txt
+            echo "## ☸️ Kubernetes Deployment" >> release_notes.txt
+            echo "The complete Kubernetes configuration for this version has been generated and attached as a release asset." >> release_notes.txt
+            echo "To deploy this exact release to your cluster, run:" >> release_notes.txt
+            echo "\`\`\`bash" >> release_notes.txt
+            echo "kubectl apply -f https://github.com/${GITHUB_REPOSITORY}/releases/download/${LATEST_TAG}/pinterest-k8s.k8s.yaml" >> release_notes.txt
+            echo "\`\`\`" >> release_notes.txt
+            echo "" >> release_notes.txt
+            echo "## 🛠️ Stack Versions" >> release_notes.txt
+            echo "- **Node.js**: \`${NODE_VERSION}\`" >> release_notes.txt
+            echo "- **React**: \`${REACT_VERSION}\`" >> release_notes.txt
+            echo "- **Express**: \`${EXPRESS_VERSION}\`" >> release_notes.txt
+            echo "" >> release_notes.txt
+            echo "## 🔒 Security & Integrity (SLSA)" >> release_notes.txt
+            echo "- ✅ **CodeQL Scanning**: Passed" >> release_notes.txt
+            echo "- ✅ **Secret Scanning (TruffleHog)**: Passed" >> release_notes.txt
+            echo "- ✅ **Unit Tests**: Passed" >> release_notes.txt
+            echo "- 🛡️ **Asset Integrity**: Download \`checksums.txt\` to verify the YAML artifact's SHA256 checksum." >> release_notes.txt
             gh release edit $LATEST_TAG --notes-file release_notes.txt || echo "Failed to edit release notes, but semantic release succeeded."
           fi
 
