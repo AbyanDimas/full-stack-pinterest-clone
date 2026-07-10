@@ -36,6 +36,7 @@ export class AppChart extends Chart {
         ],
         securityContext: {
           ensureNonRoot: false,
+          readOnlyRootFilesystem: false,
         }
       }]
     });
@@ -65,6 +66,7 @@ export class AppChart extends Chart {
         },
         securityContext: {
           ensureNonRoot: false,
+          readOnlyRootFilesystem: false,
         }
       }]
     });
