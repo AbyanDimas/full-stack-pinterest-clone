@@ -75,27 +75,20 @@ export class AppChart extends Chart {
       metrics: [kplus.Metric.resourceCpu(kplus.MetricTarget.averageUtilization(70))]
     });
 
-    // Ingress to expose the app on abyandimas.me
+    // Ingress to expose the app using K3s default Traefik
     const ingress = new kplus.Ingress(this, 'AppIngress', {
       metadata: {
         name: 'pinterest-ingress',
         annotations: {
-          'kubernetes.io/ingress.class': 'nginx',
-          'cert-manager.io/cluster-issuer': 'letsencrypt-prod' // assuming cert-manager is used
+          'kubernetes.io/ingress.class': 'traefik'
         }
       }
     });
 
-    // Add TLS configuration
-    ingress.addTls([{
-      hosts: ['abyandimas.me'],
-      secret: kplus.Secret.fromSecretName(this, 'TlsSecret', 'abyandimas-tls-secret')
-    }]);
+    // Route api.abyandimas.me to backend
+    ingress.addHostRule('api.abyandimas.me', '/', kplus.IngressBackend.fromService(backendService), kplus.HttpIngressPathType.PREFIX);
 
-    // Route /api to backend
-    ingress.addHostRule('abyandimas.me', '/api', kplus.IngressBackend.fromService(backendService), kplus.HttpIngressPathType.PREFIX);
-
-    // Route everything else to frontend
+    // Route abyandimas.me to frontend
     ingress.addHostRule('abyandimas.me', '/', kplus.IngressBackend.fromService(frontendService), kplus.HttpIngressPathType.PREFIX);
   }
 }
