@@ -326,7 +326,10 @@ jobs:
             export REACT_VERSION
             export EXPRESS_VERSION
             export GITHUB_REPOSITORY=${{ github.repository }}
-            echo "## 🐳 Docker Images" > release_notes.txt
+            echo "## 🌍 Live URL" > release_notes.txt
+            echo "The application is successfully deployed and live at: **[https://pinterest.abyandimas.me](https://pinterest.abyandimas.me)**" >> release_notes.txt
+            echo "" >> release_notes.txt
+            echo "## 🐳 Docker Images" >> release_notes.txt
             echo "Images have been successfully pushed to Docker Hub and are ready for deployment:" >> release_notes.txt
             echo "- **Frontend**: \`${DOCKERHUB_USERNAME}/full-stack-pinterest-frontend:${IMAGE_TAG}\`" >> release_notes.txt
             echo "- **Backend**: \`${DOCKERHUB_USERNAME}/full-stack-pinterest-backend:${IMAGE_TAG}\`" >> release_notes.txt
@@ -348,6 +351,10 @@ jobs:
             echo "- ✅ **Secret Scanning (TruffleHog)**: Passed" >> release_notes.txt
             echo "- ✅ **Unit Tests**: Passed" >> release_notes.txt
             echo "- 🛡️ **Asset Integrity**: Download \`checksums.txt\` to verify the YAML artifact's SHA256 checksum." >> release_notes.txt
+            
+            # Also append to GitHub Step Summary so it shows on the Actions UI
+            cat release_notes.txt >> $GITHUB_STEP_SUMMARY
+            
             gh release edit $LATEST_TAG --notes-file release_notes.txt || echo "Failed to edit release notes, but semantic release succeeded."
           fi
 
