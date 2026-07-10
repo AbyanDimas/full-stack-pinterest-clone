@@ -325,36 +325,58 @@ jobs:
             export NODE_VERSION
             export REACT_VERSION
             export EXPRESS_VERSION
-            node -e "
-              const fs = require('fs');
-              const text = \`
-              ## 🐳 Docker Images
-              Images have been successfully pushed to Docker Hub and are ready for deployment:
-              - **Frontend**: \\\`${process.env.DOCKERHUB_USERNAME}/full-stack-pinterest-frontend:latest\\\`
-              - **Backend**: \\\`${process.env.DOCKERHUB_USERNAME}/full-stack-pinterest-backend:latest\\\`
-              
-              ## ☸️ Kubernetes Deployment
-              The complete Kubernetes configuration for this version has been generated and attached as a release asset.
-              To deploy this exact release to your cluster, run:
-              \\\`\\\`\\\`bash
-              kubectl apply -f https://github.com/${process.env.GITHUB_REPOSITORY}/releases/download/${process.env.LATEST_TAG}/pinterest-k8s.k8s.yaml
-              \\\`\\\`\\\`
-              
-              ## 🛠️ Stack Versions
-              - **Node.js**: \\\`${process.env.NODE_VERSION}\\\`
-              - **React**: \\\`${process.env.REACT_VERSION}\\\`
-              - **Express**: \\\`${process.env.EXPRESS_VERSION}\\\`
-              
-              ## 🔒 Security & Integrity (SLSA)
-              - ✅ **CodeQL Scanning**: Passed
-              - ✅ **Secret Scanning (TruffleHog)**: Passed
-              - ✅ **Unit Tests**: Passed
-              - 🛡️ **Asset Integrity**: Download \\\`checksums.txt\\\` to verify the YAML artifact's SHA256 checksum.
-              \`.replace(/^ {14}/gm, ''); // Strip leading indentation safely
-              fs.writeFileSync('release_notes.txt', text);
-            "
+            export GITHUB_REPOSITORY=${{ github.repository }}
+            cat << 'EOF' > generate_notes.js
+            const fs = require('fs');
+            const text = `
+            ## 🐳 Docker Images
+            Images have been successfully pushed to Docker Hub and are ready for deployment:
+            - **Frontend**: \`${process.env.DOCKERHUB_USERNAME}/full-stack-pinterest-frontend:${process.env.IMAGE_TAG}\`
+            - **Backend**: \`${process.env.DOCKERHUB_USERNAME}/full-stack-pinterest-backend:${process.env.IMAGE_TAG}\`
+            
+            ## ☸️ Kubernetes Deployment
+            The complete Kubernetes configuration for this version has been generated and attached as a release asset.
+            To deploy this exact release to your cluster, run:
+            \`\`\`bash
+            kubectl apply -f https://github.com/${process.env.GITHUB_REPOSITORY}/releases/download/${process.env.LATEST_TAG}/pinterest-k8s.k8s.yaml
+            \`\`\`
+            
+            ## 🛠️ Stack Versions
+            - **Node.js**: \`${process.env.NODE_VERSION}\`
+            - **React**: \`${process.env.REACT_VERSION}\`
+            - **Express**: \`${process.env.EXPRESS_VERSION}\`
+            
+            ## 🔒 Security & Integrity (SLSA)
+            - ✅ **CodeQL Scanning**: Passed
+            - ✅ **Secret Scanning (TruffleHog)**: Passed
+            - ✅ **Unit Tests**: Passed
+            - 🛡️ **Asset Integrity**: Download \`checksums.txt\` to verify the YAML artifact's SHA256 checksum.
+            `.replace(/^ {12}/gm, '').trim();
+            fs.writeFileSync('release_notes.txt', text);
+            EOF
+            node generate_notes.js
             gh release edit $LATEST_TAG --notes-file release_notes.txt || echo "Failed to edit release notes, but semantic release succeeded."
           fi
+
+      - name: 📤 Upload K8s Manifest Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: k8s-manifest
+          path: ./k8s/dist/pinterest-k8s.k8s.yaml
+
+  # ==========================================
+  # GITOPS DEPLOYMENT JOB
+  # ==========================================
+  deploy-gitops:
+    name: Deploy to GitOps Repo
+    needs: release
+    runs-on: ubuntu-latest
+    steps:
+      - name: 📥 Download K8s Manifest Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: k8s-manifest
+          path: ./k8s-manifest-dir
 
       - name: 🚀 Push to GitOps Deployment Repo
         env:
@@ -368,7 +390,7 @@ jobs:
           git clone https://$GITOPS_PAT@github.com/${{ github.actor }}/full-stack-pinterest-deployment.git deploy-repo
           
           # Copy the newly generated YAML
-          cp ./k8s/dist/pinterest-k8s.k8s.yaml ./deploy-repo/k8s-manifest.yaml
+          cp ./k8s-manifest-dir/pinterest-k8s.k8s.yaml ./deploy-repo/k8s-manifest.yaml
           
           # Commit and push
           cd deploy-repo
@@ -377,7 +399,7 @@ jobs:
           if git diff --staged --quiet; then
             echo "No changes in K8s manifest, skipping GitOps push."
           else
-            git commit -m "chore(gitops): update k8s manifest to latest version"
+            git commit -m "chore(gitops): update k8s manifest to commit ${{ github.sha }}"
             git push origin main
             echo "Successfully pushed to GitOps repository!"
           fi
