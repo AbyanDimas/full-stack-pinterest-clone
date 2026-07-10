@@ -99,8 +99,8 @@ export class AppChart extends Chart {
     // Route api.abyandimas.me to backend
     ingress.addHostRule('api.abyandimas.me', '/', kplus.IngressBackend.fromService(backendService), kplus.HttpIngressPathType.PREFIX);
 
-    // Route abyandimas.me to frontend
-    ingress.addHostRule('abyandimas.me', '/', kplus.IngressBackend.fromService(frontendService), kplus.HttpIngressPathType.PREFIX);
+    // Route pinterest.abyandimas.me to frontend
+    ingress.addHostRule('pinterest.abyandimas.me', '/', kplus.IngressBackend.fromService(frontendService), kplus.HttpIngressPathType.PREFIX);
   }
 }
 

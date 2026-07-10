@@ -353,7 +353,7 @@ jobs:
             - 🛡️ **Asset Integrity**: Download \`checksums.txt\` to verify the YAML artifact's SHA256 checksum.
             `.replace(/^ {12}/gm, '').trim();
             fs.writeFileSync('release_notes.txt', text);
-            EOF
+EOF
             node generate_notes.js
             gh release edit $LATEST_TAG --notes-file release_notes.txt || echo "Failed to edit release notes, but semantic release succeeded."
           fi
