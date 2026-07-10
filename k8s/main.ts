@@ -75,6 +75,12 @@ export class AppChart extends Chart {
       metrics: [kplus.Metric.resourceCpu(kplus.MetricTarget.averageUtilization(70))]
     });
 
+    // Imgproxy External Service (Running in Docker Compose on the host)
+    const imgproxyService = new kplus.Service(this, 'ImgproxyService', {
+      type: kplus.ServiceType.EXTERNAL_NAME,
+      externalName: '52.200.119.20',
+    });
+
     // Ingress to expose the app using K3s default Traefik
     const ingress = new kplus.Ingress(this, 'AppIngress', {
       metadata: {
@@ -84,6 +90,11 @@ export class AppChart extends Chart {
         }
       }
     });
+
+    // Route imgproxy.abyandimas.me to the external imgproxy service on port 8080
+    // Note: CDK8s-plus HttpIngressPathType.PREFIX requires a backend service with a port
+    // So we manually construct the Ingress backend for the external service
+    ingress.addHostRule('imgproxy.abyandimas.me', '/', kplus.IngressBackend.fromService(imgproxyService, { port: 8080 }), kplus.HttpIngressPathType.PREFIX);
 
     // Route api.abyandimas.me to backend
     ingress.addHostRule('api.abyandimas.me', '/', kplus.IngressBackend.fromService(backendService), kplus.HttpIngressPathType.PREFIX);
