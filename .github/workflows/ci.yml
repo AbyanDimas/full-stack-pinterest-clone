@@ -359,7 +359,7 @@ jobs:
           fi
 
       - name: 📤 Upload K8s Manifest Artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: k8s-manifest
           path: ./k8s/dist/pinterest-k8s.k8s.yaml
