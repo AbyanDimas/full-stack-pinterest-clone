@@ -13,7 +13,7 @@
   "dependencies": {
     "@tanstack/react-query": "^5.104.5",
     "axios": "^1.20.0",
-    "emoji-picker-react": "^5.0.0",
+    "emoji-picker-react": "^5.1.1",
     "react": "^19.2.7",
     "react-colorful": "^5.8.1",
     "react-dom": "^19.3.0",
